@@ -5,100 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MILITANT ATLAS</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      min-height: 100vh;
-      background: #000;
-      color: #eee;
-      font-family: Arial, Helvetica, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      min-height:100vh;
+      background:#000;
+      color:#eee;
+      font-family:Arial, Helvetica, sans-serif;
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
     .container {
-      text-align: center;
-      width: 100%;
-      max-width: 500px;
-      padding: 20px;
+      text-align:center;
+      width:100%;
+      max-width:500px;
+      padding:20px;
     }
     h1 {
-      font-size: clamp(2.8rem, 10vw, 5rem);
-      margin-bottom: 2.5rem;
-      color: #4ade80;
-      text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
-      letter-spacing: 3px;
+      font-size:clamp(2.8rem,10vw,5rem);
+      margin-bottom:2.5rem;
+      color:#4ade80;
+      text-shadow:0 0 20px rgba(74,222,128,0.5);
+      letter-spacing:3px;
     }
     .continents {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      margin: 2rem 0;
+      display:flex;
+      flex-direction:column;
+      gap:1.5rem;
+      margin:2rem 0;
     }
     .continent {
-      background: #111;
-      border: 2px solid #333;
-      border-radius: 16px;
-      padding: 2.2rem 1.5rem;
-      font-size: clamp(1.6rem, 6vw, 2.2rem);
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      user-select: none;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.7);
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
+      background:#111;
+      border:2px solid #333;
+      border-radius:16px;
+      padding:2.2rem 1.5rem;
+      font-size:clamp(1.6rem,6vw,2.2rem);
+      font-weight:bold;
+      cursor:pointer;
+      transition:all 0.25s ease;
+      user-select:none;
+      box-shadow:0 4px 15px rgba(0,0,0,0.7);
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
     }
-    /* Fare gelince veya dokununca yeşil yansın */
     .continent:hover,
     .continent:active {
-      background: #4ade80;
-      color: #000;
-      border-color: #4ade80;
-      box-shadow: 0 10px 30px rgba(74, 222, 128, 0.6);
-      transform: translateY(-4px);
+      background:#4ade80;
+      color:#000;
+      border-color:#4ade80;
+      box-shadow:0 10px 30px rgba(74,222,128,0.6);
+      transform:translateY(-4px);
     }
-    /* Afrika özel vurgu (sabit yeşil tonu) */
+    /* Afrika sadece biraz daha büyük ve kalın olsun (renk aynı) */
     .africa {
-      background: #27ae60;
-      border-color: #27ae60;
-      color: #000;
-    }
-    .africa:hover,
-    .africa:active {
-      background: #4ade80;
-      border-color: #4ade80;
-      box-shadow: 0 10px 30px rgba(74, 222, 128, 0.7);
+      font-size:clamp(1.8rem,6.5vw,2.5rem);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:1px;
     }
     .hint {
-      font-size: clamp(1.2rem, 4.5vw, 1.6rem);
-      color: #888;
-      margin-top: 3rem;
-      letter-spacing: 1px;
-      font-weight: 500;
+      font-size:clamp(1.2rem,4.5vw,1.6rem);
+      color:#888;
+      margin-top:3rem;
+      letter-spacing:1px;
+      font-weight:500;
     }
     .hint strong {
-      color: #4ade80;
+      color:#4ade80;
     }
-
-    /* Küçük ekranlarda padding ve yazı boyutu ayarı */
-    @media (max-width: 500px) {
-      .container {
-        padding: 15px;
-      }
-      .continent {
-        padding: 2.8rem 1.2rem;
-        font-size: 2.1rem;
-      }
-      h1 {
-        margin-bottom: 2rem;
-      }
-      .hint {
-        margin-top: 4rem;
-      }
+    @media (max-width:500px) {
+      .continent { padding:2.8rem 1.2rem; font-size:2.1rem; }
+      h1 { margin-bottom:2rem; }
+      .hint { margin-top:4rem; }
     }
   </style>
 </head>
@@ -106,23 +84,23 @@
   <div class="container">
     <h1>MILITANT ATLAS</h1>
     <div class="continents">
-      <div class="continent africa" onclick="goTo('Afrika')">AFRICA</div>
-      <div class="continent" onclick="goTo('Asya')">ASIA</div>
-      <div class="continent" onclick="goTo('Avrupa')">EUROPE</div>
-      <div class="continent" onclick="goTo('Kuzey Amerika')">NORTH AMERICA</div>
-      <div class="continent" onclick="goTo('Güney Amerika')">SOUTH AMERICA</div>
-         </div>
+<div class="continent africa" onclick="goTo('Africa')">AFRICA</div>
+      <div class="continent" onclick="goTo('Asia')">ASIA</div>
+      <div class="continent" onclick="goTo('Europe')">EUROPE</div>
+      <div class="continent" onclick="goTo('Norh America')">NORTH AMERICA</div>
+      <div class="continent" onclick="goTo('South America')">SOUTH AMERICA</div>
+    </div>
     <div class="hint">
-      <strong>Please select a continent</strong>
+       <strong>Please select a map</strong>
     </div>
   </div>
 
   <script>
     function goTo(continent) {
       if (continent === 'Afrika') {
-        window.location.href = 'africamap.html';  // ← dosya adın buysa değiştir
+        window.location.href = 'africamap.html';  // dosya adın buysa değiştir
       } else {
-        alert(continent + ' haritası henüz hazır değil!');
+         alert(continent + ' map is coming soon!');
       }
     }
   </script>
