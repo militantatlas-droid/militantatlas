@@ -81,13 +81,13 @@
       padding: 20px;
       position: relative;
       overflow-y: auto;
-      display: none !important; /* başlangıçta gizli olsun */
+      display: none;
       transition: transform 0.3s ease;
       transform: translateX(100%);
       touch-action: auto;
     }
     #sidebar.active {
-      display: block !important;
+      display: block;
       transform: translateX(0);
     }
     #sidebar-close {
@@ -132,7 +132,6 @@
     }
     .group a:hover { text-decoration: underline; }
 
-    /* SABİT ARAMA BUTONU */
     #search-button {
       position: fixed;
       bottom: 20px;
@@ -195,7 +194,7 @@
 <div id="container">
   <div id="map-area">
     <svg id="svg-map" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-      <path
+     <path
      inkscape:connector-curvature="0"
      id="AO"
      data-name="Angola"
@@ -560,7 +559,9 @@
 <button id="search-button">ARAMA YAP</button>
 
 <script>
+// ================================================
 // DEĞİŞKENLER
+// ================================================
 const tooltip = document.getElementById("tooltip");
 const sidebar = document.getElementById("sidebar");
 const sidebarContent = document.getElementById("sidebar-content");
@@ -575,64 +576,81 @@ let isPanning = false;
 let startPoint = { x: 0, y: 0 };
 const originalWidth = 1000;
 const originalHeight = 1000;
-let prevDist = 0;
-let prevMid = { x: 0, y: 0 };
 
-// VERİ YÜKLEME + initMap her durumda çalışsın
+// ================================================
+// VERİ YÜKLEME
+// ================================================
 fetch("data.json")
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error("data.json dosyası bulunamadı veya erişilemiyor");
+    return res.json();
+  })
   .then(data => {
-    countryData = data || {};
+    countryData = data;
+    console.log("data.json başarıyla yüklendi");
     initMap();
   })
   .catch(err => {
     console.error("data.json yüklenemedi:", err);
-    sidebarContent.innerHTML = "<p style='color:#f66;'>Veri dosyası yüklenemedi.</p>";
+    sidebarContent.innerHTML = `
+      <p style="color:#ff4444; font-weight:bold; padding:10px;">
+        ⚠️ data.json dosyası yüklenemedi!<br>
+        Gruplar ve detaylar gösterilemiyor.<br>
+        Lütfen data.json dosyasını repo köküne yükleyin.
+      </p>
+    `;
     initMap(); // veri olmasa bile harita etkileşimleri çalışsın
   });
 
-// BUTON TIKLAMA - GARANTİ
-document.addEventListener("DOMContentLoaded", () => {
-  if (searchButton) {
-    searchButton.addEventListener("click", () => {
-      console.log("ARAMA YAP butonuna tıklandı - sidebar açılıyor");
-      sidebar.classList.add("active");
-      searchButton.classList.add("hidden");
-    });
-  } else {
-    console.warn("search-button elementi bulunamadı!");
-  }
-});
+// ================================================
+// BUTON OLAYI
+// ================================================
+if (searchButton) {
+  searchButton.addEventListener("click", () => {
+    console.log("ARAMA YAP butonuna tıklandı");
+    sidebar.classList.add("active");
+    searchButton.classList.add("hidden");
+  });
+}
 
+// ================================================
 // HARİTA OLAYLARI
+// ================================================
 function initMap() {
-  console.log("initMap çağrıldı - olay dinleyicileri ekleniyor");
+  console.log("Harita olayları başlatıldı");
   const paths = document.querySelectorAll("svg path");
   paths.forEach(path => {
     const id = path.id;
-    const name = path.getAttribute("data-name") || id;
+    const fallbackName = path.getAttribute("data-name") || id || "Bilinmeyen";
+    
+    // Hover / Tooltip
     const enterHandler = (e) => {
       if (e.touches && e.touches.length > 1) return;
       const country = countryData[id] || {};
-      tooltip.innerHTML = `
-        <strong>${country.name || name}</strong><br>
-        ${country.groups?.length ? country.groups.map(g => g.name).join("<br>") : "Grup bilgisi yok"}
-      `;
+      const displayName = country.name || fallbackName;
+      const groupsText = country.groups?.length 
+        ? country.groups.map(g => g.name || g).join("<br>")
+        : "Grup bilgisi yok";
+      tooltip.innerHTML = `<strong>${displayName}</strong><br>${groupsText}`;
       tooltip.style.display = "block";
       tooltip.classList.add("visible");
       moveTooltip(e);
     };
+
     path.addEventListener("mouseenter", enterHandler);
     path.addEventListener("touchstart", enterHandler, { passive: true });
     path.addEventListener("mousemove", moveTooltip);
     path.addEventListener("touchmove", moveTooltip, { passive: true });
+
+    // Tıklama
     path.addEventListener("click", () => {
-      console.log("Ülke tıklandı:", id);
+      console.log("Ülke tıklandı:", id, fallbackName);
       if (activePath) activePath.classList.remove("active");
       path.classList.add("active");
       activePath = path;
-      showSidebar(id);
+      showSidebar(id, fallbackName);
     });
+
     path.addEventListener("touchend", (e) => {
       if (e.touches.length === 0) path.dispatchEvent(new Event("click"));
     }, { passive: true });
@@ -642,12 +660,65 @@ function initMap() {
   mapArea.addEventListener("touchend", (e) => {
     if (e.touches.length === 0) hideTooltip();
   }, { passive: true });
-
-  // zoom/pan olayları burada devam eder (önceki kodundan kopyala: onWheel, onPointerDown vs.)
-  // ... (onWheel, getMousePos, applyPan vb. fonksiyonlar aynı)
 }
 
-// closeSidebar
+// ================================================
+// SIDEBAR GÖSTERME
+// ================================================
+function showSidebar(id, fallbackName) {
+  const data = countryData[id] || {};
+  const name = data.name || fallbackName;
+
+  let html = `<h2 style="margin-top:0;">${name}</h2>`;
+
+  if (Object.keys(countryData).length === 0) {
+    html += `
+      <p style="color:#ff4444; font-weight:bold;">
+        ⚠️ data.json yüklenemedi!<br>
+        Grup linkleri ve detaylar gösterilemiyor.<br>
+        Lütfen data.json dosyasını kontrol edin.
+      </p>`;
+  } else if (data.groups && data.groups.length > 0) {
+    data.groups.forEach(group => {
+      html += `
+        <div class="group">
+          <a href="${group.url || '#'}" target="_blank" rel="noopener noreferrer">
+            ${group.name}
+          </a>
+        </div>
+      `;
+    });
+  } else {
+    html += "<p>Bu bölge için grup bilgisi bulunmuyor.</p>";
+  }
+
+  sidebarContent.innerHTML = html;
+  sidebar.classList.add("active");
+  sidebarContent.scrollTop = 0;
+}
+
+// ================================================
+// TOOLTIP KAPATMA
+// ================================================
+function hideTooltip() {
+  tooltip.classList.remove("visible");
+  setTimeout(() => { tooltip.style.display = "none"; }, 180);
+}
+
+function moveTooltip(e) {
+  const offset = 16;
+  const x = (e.clientX || e.touches?.[0]?.clientX || 0) + offset;
+  const y = (e.clientY || e.touches?.[0]?.clientY || 0) + offset;
+  let left = x, top = y;
+  if (left + tooltip.offsetWidth > window.innerWidth - 10) left = x - tooltip.offsetWidth - offset * 2;
+  if (top + tooltip.offsetHeight > window.innerHeight - 10) top = y - tooltip.offsetHeight - offset * 2;
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+}
+
+// ================================================
+// SIDEBAR KAPATMA
+// ================================================
 function closeSidebar() {
   sidebar.classList.remove("active");
   if (activePath) {
@@ -660,12 +731,19 @@ function closeSidebar() {
 }
 
 document.getElementById("sidebar-close")?.addEventListener("click", closeSidebar);
+document.addEventListener("click", e => {
+  if (!sidebar.classList.contains("active")) return;
+  if (sidebar.contains(e.target) || e.target.id === "search-button") return;
+  if (e.target.closest("svg path")) return;
+  closeSidebar();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && sidebar.classList.contains("active")) closeSidebar();
+});
 
-// ... diğer olay dinleyicileri (dışarı tıklama, Escape) aynı ...
-
-// showSidebar ve tooltip/moveTooltip fonksiyonları aynı (gerekirse fallback eklenmiş haliyle)
-
-// arama filtreleme aynı
+// ================================================
+// ARAMA FİLTRELEME
+// ================================================
 searchInput?.addEventListener("input", e => {
   const term = e.target.value.trim().toLowerCase();
   document.querySelectorAll("svg path").forEach(path => {
