@@ -56,14 +56,7 @@
       box-shadow:0 10px 30px rgba(74,222,128,0.6);
       transform:translateY(-4px);
     }
-    /* Afrika sadece biraz daha büyük ve kalın olsun (renk aynı) */
-    .africa {
-      font-size:clamp(1.8rem,6.5vw,2.5rem);
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:1px;
-    }
-    .hint {
+     .hint {
       font-size:clamp(1.2rem,4.5vw,1.6rem);
       color:#888;
       margin-top:3rem;
@@ -82,7 +75,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>MILITANT ATLAS</h1>
+  <h1>MILITANT ATLAS</h1>
     <div class="continents">
 <div class="continent africa" onclick="goTo('Africa')">AFRICA</div>
       <div class="continent" onclick="goTo('Asia')">ASIA</div>
@@ -97,7 +90,7 @@
 
   <script>
     function goTo(continent) {
-      if (continent === 'Afrika') {
+      if (continent === 'Africa') {
         window.location.href = 'africamap.html';  // dosya adın buysa değiştir
       } else {
          alert(continent + ' map is coming soon!');
