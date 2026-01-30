@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MILITANT ATLAS</title>
-  <style>
+   <title>MILITANT ATLAS</title>  <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     html, body {
       height:100%;
-      overflow:hidden;           /* kaydırmayı tamamen kapat */
+      overflow:hidden;
     }
     body {
       background:#000;
@@ -17,42 +16,72 @@
       display:flex;
       justify-content:center;
       align-items:center;
+      position:relative;
     }
+
+    /* Varsayılan (PC / yatay ekran) arka plan */
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      background-image: url('https://www.ctvnews.ca/resizer/v2/KKXSNHXOERG7DH7I7LFGIYNEXI.jpg?smart=true&auth=970d00daafbefeaa0cfdaf3e0b243a5309ea511a79b01f6105af0974256fe297&width=1600'); /* ← PC için yatay fotoğraf */
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      filter:blur(8px) brightness(0.45);
+      transform:scale(1.05);
+    }
+
+    /* Mobil / dikey ekran (9:16 veya portrait) için farklı fotoğraf */
+    @media (max-aspect-ratio: 9/16), (orientation: portrait) {
+      body::before {
+        background-image: url('https://militantatlas-droid.github.io/militantatlastr/mobilbackground.png'); /* ← Mobil için dikey uyumlu fotoğraf (değiştir) */
+      }
+    }
+
     .container {
+      position:relative;
+      z-index:1;
       text-align:center;
       width:100%;
       max-width:420px;
-      padding:12px;              /* kenar boşluğu minimuma indirildi */
+      padding:12px;
       max-height:100vh;
       overflow:hidden;
+      background:rgba(0,0,0,0.45);
+      border-radius:16px;
     }
+
     h1 {
-      font-size:clamp(2.2rem, 8vw, 3.6rem);  /* başlık küçültüldü */
-      margin:0.8rem 0 1rem;
+      font-size:clamp(2rem,7vw,3.2rem);
+      margin:0.8rem 0 1.2rem;
       color:#4ade80;
       text-shadow:0 0 12px rgba(74,222,128,0.4);
-      letter-spacing:2px;
+      letter-spacing:1.5px;
     }
+
     .continents {
       display:flex;
       flex-direction:column;
-      gap:1rem;                  /* butonlar arası mesafe azaltıldı */
+      gap:1rem;
       margin:1rem 0;
     }
+
     .continent {
       background:#111;
       border:1.5px solid #333;
       border-radius:12px;
-      padding:1.4rem 1rem;       /* buton boyutu küçültüldü */
-      font-size:clamp(1.3rem, 4.8vw, 1.7rem);
+      padding:1.4rem 1rem;
+      font-size:clamp(1.3rem,4.8vw,1.7rem);
       font-weight:bold;
       cursor:pointer;
       transition:all 0.2s ease;
-      user-select:none;
       box-shadow:0 3px 10px rgba(0,0,0,0.6);
       touch-action:manipulation;
       -webkit-tap-highlight-color:transparent;
     }
+
     .continent:hover,
     .continent:active {
       background:#4ade80;
@@ -61,23 +90,25 @@
       box-shadow:0 6px 20px rgba(74,222,128,0.5);
       transform:translateY(-3px);
     }
+
     .africa {
-      font-size:clamp(1.5rem, 5.2vw, 1.9rem);
+      font-size:clamp(1.5rem,5.2vw,1.9rem);
       font-weight:900;
       text-transform:uppercase;
       letter-spacing:1px;
     }
+
     .hint {
-      font-size:clamp(1rem, 4vw, 1.3rem);  /* ipucu küçültüldü */
+      font-size:clamp(0.95rem,3.8vw,1.2rem);
       color:#888;
       margin-top:1.5rem;
       letter-spacing:0.8px;
     }
+
     .hint strong {
       color:#4ade80;
     }
 
-    /* Çok küçük ekranlar için ekstra optimizasyon */
     @media (max-width:380px) {
       .container { padding:8px; }
       .continent { padding:1.2rem 0.8rem; font-size:1.55rem; }
@@ -89,7 +120,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>MILITANT ATLAS</h1>
+     <h1>MILITANT ATLAS</h1>
     <div class="continents">
       <div class="continent africa" onclick="goTo('Africa')">AFRICA</div>
       <div class="continent" onclick="goTo('Asia')">ASIA</div>
