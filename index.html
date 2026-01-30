@@ -2,156 +2,86 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MILITANT Atlas - Dünya</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MILITANT Atlas </title>
   <style>
-    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      height: 100vh;
       background: #111;
       color: #eee;
-      height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
-      touch-action: none;
     }
-    #map-area {
-      height: 100%;
-      background: #1a1a1a;
-      overflow: hidden;
-      cursor: grab;
+    .container {
+      text-align: center;
+      max-width: 90%;
     }
-    svg {
-      width: 100%;
-      height: 100%;
-      display: block;
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      color: #4ade80;
     }
-    g.continent {
-      cursor: pointer;
+    .continents {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      padding: 1rem;
     }
-    g.continent path {
-      fill: #ffffff;
-      stroke: #333;
-      stroke-width: 1;
-      transition: fill 0.3s ease;
-    }
-    g.continent:hover path {
-      fill: #4ade80;
-    }
-    g.continent text {
-      fill: #111;
-      font-size: 12px;
+    .continent {
+      background: #1f1f1f;
+      border: 2px solid #333;
+      border-radius: 12px;
+      padding: 2rem 1rem;
+      font-size: 1.8rem;
       font-weight: bold;
-      pointer-events: none;
-      text-anchor: middle;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
     }
-    .tooltip {
-      position: absolute;
-      background: rgba(0,0,0,0.88);
-      color: white;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      pointer-events: none;
-      display: none;
-      z-index: 100;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    .continent:hover {
+      background: #4ade80;
+      color: #111;
+      transform: scale(1.08);
+      border-color: #4ade80;
     }
-    .tooltip.visible { display: block; opacity: 1; }
+    .continent:active {
+      transform: scale(0.98);
+    }
+    .africa {
+      background: #27ae60;
+      border-color: #27ae60;
+      color: #111;
+    }
+    .africa:hover {
+      background: #4ade80;
+      border-color: #4ade80;
+    }
   </style>
 </head>
 <body>
-<div id="map-area">
-  <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
-    <!-- Afrika (daha gerçekçi basit path) -->
-    <g id="AF" class="continent" data-continent="Afrika">
-      <path d="M380,280 Q360,300 340,340 T320,400 T340,460 T380,500 T440,510 T480,480 T500,440 T490,380 T460,320 Z" />
-      <text x="420" y="400">Afrika</text>
-    </g>
+  <div class="container">
+    <h1>MILITANT Atlas</h1>
+    <div class="continents">
+      <div class="continent africa" onclick="goTo('Afrika')">AFRICA</div>
+      <div class="continent" onclick="goTo('Asya')">ASIA</div>
+      <div class="continent" onclick="goTo('Avrupa')">EUROPE</div>
+      <div class="continent" onclick="goTo('Kuzey Amerika')">NORTH AMERICA</div>
+      <div class="continent" onclick="goTo('Güney Amerika')">SOUTH AMERICA</div>    
+    </div>
+  </div>
 
-    <!-- Asya -->
-    <g id="AS" class="continent" data-continent="Asya">
-      <path d="M580,180 Q620,160 680,180 T740,240 T760,320 T740,380 T680,420 T620,400 T580,340 Z" />
-      <text x="680" y="300">Asya</text>
-    </g>
-
-    <!-- Avrupa -->
-    <g id="EU" class="continent" data-continent="Avrupa">
-      <path d="M460,140 Q480,120 520,130 T540,170 T520,200 T480,210 Z" />
-      <text x="500" y="170">Avrupa</text>
-    </g>
-
-    <!-- Kuzey Amerika -->
-    <g id="NA" class="continent" data-continent="Kuzey Amerika">
-      <path d="M180,120 Q220,80 280,70 T340,100 T340,160 T300,200 T240,190 Z" />
-      <text x="260" y="140">K. Amerika</text>
-    </g>
-
-    <!-- Güney Amerika -->
-    <g id="SA" class="continent" data-continent="Güney Amerika">
-      <path d="M260,320 Q300,300 340,310 T380,350 T360,400 T300,420 Z" />
-      <text x="320" y="370">G. Amerika</text>
-    </g>
-
-    <!-- Avustralya -->
-    <g id="OC" class="continent" data-continent="Avustralya">
-      <path d="M780,380 Q820,360 860,380 T880,420 T840,460 T780,440 Z" />
-      <text x="830" y="410">Avustralya</text>
-    </g>
-
-    <!-- Antarktika -->
-    <g id="AN" class="continent" data-continent="Antarktika">
-      <path d="M300,520 Q400,500 500,510 T600,530 T500,560 T400,550 Z" />
-      <text x="450" y="540">Antarktika</text>
-    </g>
-  </svg>
-
-  <div class="tooltip" id="tooltip"></div>
-</div>
-
-<script>
-const tooltip = document.getElementById("tooltip");
-
-function showTooltip(e, text) {
-  tooltip.innerHTML = `<strong>${text}</strong><br>Tıkla`;
-  tooltip.classList.add("visible");
-  tooltip.style.left = (e.clientX + 16) + "px";
-  tooltip.style.top = (e.clientY + 16) + "px";
-}
-
-function hideTooltip() {
-  tooltip.classList.remove("visible");
-}
-
-document.querySelectorAll("g.continent").forEach(g => {
-  const name = g.getAttribute("data-continent");
-
-  g.addEventListener("mouseenter", e => showTooltip(e, name));
-  g.addEventListener("mousemove", e => {
-    tooltip.style.left = (e.clientX + 16) + "px";
-    tooltip.style.top = (e.clientY + 16) + "px";
-  });
-  g.addEventListener("mouseleave", hideTooltip);
-
-  g.addEventListener("click", () => {
-    if (name === "Afrika") {
-      window.location.href = "africamap.html";  // ← burası kritik: africa.html (küçük harf)
-    } else {
-      alert(name + " için harita henüz yok!");
+  <script>
+    function goTo(continent) {
+      if (continent === 'Afrika') {
+        window.location.href = 'africamap.html';  // ← burası kritik: dosya adın neyse ona göre değiştir
+      } else {
+        alert(continent + ' haritası henüz hazır değil!');
+      }
     }
-  });
-
-  // Mobil dokunma
-  g.addEventListener("touchstart", e => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    showTooltip({clientX: touch.clientX, clientY: touch.clientY}, name);
-  }, { passive: false });
-
-  g.addEventListener("touchend", () => {
-    if (name === "Afrika") window.location.href = "africa.html";
-  });
-});
-</script>
+  </script>
 </body>
 </html>
